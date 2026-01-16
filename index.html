@@ -1,0 +1,1323 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TOSCA Problem Statement Generator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+    .font-display {
+      font-family: 'Poppins', sans-serif;
+    }
+    .font-body {
+      font-family: 'Inter', sans-serif;
+    }
+    .gradient-bg {
+      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 50%, #2dd4bf 100%);
+    }
+    .glass {
+      background: rgba(255, 255, 255, 0.97);
+      backdrop-filter: blur(10px);
+    }
+    .element-card {
+      transition: all 0.3s ease;
+    }
+    .element-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    }
+    @keyframes slideIn {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .animate-slide-in {
+      animation: slideIn 0.4s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.3s ease-out;
+    }
+    .suggestion-badge {
+      animation: slideIn 0.3s ease-out;
+    }
+    .check-icon {
+      animation: fadeIn 0.3s ease-out;
+    }
+    .progress-ring {
+      transition: stroke-dashoffset 0.5s ease;
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full gradient-bg font-body">
+  <div id="app-wrapper" class="h-full w-full overflow-auto">
+   <div class="max-w-5xl mx-auto p-4 md:p-8"><!-- Header -->
+    <header class="text-center mb-8 animate-slide-in">
+     <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-4"><span class="text-2xl"></span>This tool intends to support your learning and should not be treated as a replacement for your studies.<span class="text-sm font-medium text-white"></span>
+     </div>
+     <h1 id="main-title" class="text-4xl md:text-5xl font-bold text-white mb-3 font-display">TOSCA Problem Statement Generator</h1>
+     <p id="subtitle" class="text-white/90 text-lg max-w-2xl mx-auto">Build structured and editable problem statements</p>
+    </header><!-- Example Section -->
+    <div class="glass rounded-3xl shadow-2xl p-6 md:p-8 mb-6 animate-slide-in">
+     <div class="flex items-center gap-3 mb-4"><span class="text-3xl">💡</span>
+      <h2 class="text-xl font-bold text-gray-800 font-display">Example Problem Statement</h2>
+     </div>
+     <div class="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-5 border-2 border-amber-200">
+      <p class="text-gray-700 mb-4 leading-relaxed italic">"How can <span class="bg-purple-200 px-2 py-0.5 rounded font-semibold">the mahalla committee</span> address <span class="bg-red-200 px-2 py-0.5 rounded font-semibold">the issue of lack of safe play spaces for children</span> by <span class="bg-green-200 px-2 py-0.5 rounded font-semibold">establishing a safe playground accessible to at least 50 children daily</span>, considering <span class="bg-orange-200 px-2 py-0.5 rounded font-semibold">limited budget and small available land area</span>?"</p>
+      <div class="grid md:grid-cols-2 gap-3 text-sm">
+       <div class="bg-white rounded-lg p-3 border border-purple-200"><span class="font-bold text-purple-700">O:</span> The mahalla committee
+       </div>
+       <div class="bg-white rounded-lg p-3 border border-red-200"><span class="font-bold text-red-700">T:</span> Lack of safe play spaces
+       </div>
+       <div class="bg-white rounded-lg p-3 border border-green-200"><span class="font-bold text-green-700">S:</span> Safe playground for 50+ children
+       </div>
+       <div class="bg-white rounded-lg p-3 border border-orange-200"><span class="font-bold text-orange-700">C:</span> Limited budget and land
+       </div>
+      </div>
+     </div>
+    </div><!-- Progress Tracker -->
+    <div class="glass rounded-3xl shadow-2xl p-6 mb-6 animate-slide-in">
+     <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-bold text-gray-800 font-display">Your Progress</h2>
+      <div class="flex items-center gap-2"><span id="progress-text" class="text-sm font-semibold text-teal-700">0/4 Complete</span>
+       <svg class="w-12 h-12 transform -rotate-90"><circle cx="24" cy="24" r="20" stroke="#d1fae5" stroke-width="4" fill="none" /> <circle id="progress-circle" cx="24" cy="24" r="20" stroke="#0f766e" stroke-width="4" fill="none" class="progress-ring" stroke-dasharray="125.6" stroke-dashoffset="125.6" stroke-linecap="round" />
+       </svg>
+      </div>
+     </div>
+     <div class="grid grid-cols-4 gap-2">
+      <div id="step-owner" class="text-center p-2 bg-gray-100 rounded-lg border-2 border-gray-200 transition-all">
+       <div class="text-xs font-semibold text-gray-500">
+        Owner
+       </div>
+      </div>
+      <div id="step-trouble" class="text-center p-2 bg-gray-100 rounded-lg border-2 border-gray-200 transition-all">
+       <div class="text-xs font-semibold text-gray-500">
+        Trouble
+       </div>
+      </div>
+      <div id="step-success" class="text-center p-2 bg-gray-100 rounded-lg border-2 border-gray-200 transition-all">
+       <div class="text-xs font-semibold text-gray-500">
+        Success
+       </div>
+      </div>
+      <div id="step-constraints" class="text-center p-2 bg-gray-100 rounded-lg border-2 border-gray-200 transition-all">
+       <div class="text-xs font-semibold text-gray-500">
+        Constraints
+       </div>
+      </div>
+     </div>
+    </div><!-- TOSCA Reference Card -->
+    <div class="glass rounded-3xl shadow-2xl p-6 mb-6 animate-slide-in">
+     <div class="flex items-center gap-3 mb-4">
+      <div class="w-10 h-10 bg-gradient-to-br from-teal-600 to-cyan-600 rounded-xl flex items-center justify-center"><span class="text-xl">📚</span>
+      </div>
+      <h2 class="text-xl font-bold text-gray-800 font-display">TOSCA Framework Quick Reference</h2>
+     </div>
+     <div class="grid md:grid-cols-5 gap-3">
+      <div class="bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-4 border border-red-200">
+       <div class="flex items-center gap-2 mb-2"><span class="w-8 h-8 bg-red-500 text-white rounded-lg flex items-center justify-center font-bold text-sm">T</span> <span class="font-bold text-red-900 text-sm">Trouble</span>
+       </div>
+       <p class="text-xs text-red-800">What's the problem that needs fixing?</p>
+      </div>
+      <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4 border border-purple-200">
+       <div class="flex items-center gap-2 mb-2"><span class="w-8 h-8 bg-purple-500 text-white rounded-lg flex items-center justify-center font-bold text-sm">O</span> <span class="font-bold text-purple-900 text-sm">Owner</span>
+       </div>
+       <p class="text-xs text-purple-800">Who is responsible for solving it?</p>
+      </div>
+      <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4 border border-green-200">
+       <div class="flex items-center gap-2 mb-2"><span class="w-8 h-8 bg-green-500 text-white rounded-lg flex items-center justify-center font-bold text-sm">S</span> <span class="font-bold text-green-900 text-sm">Success</span>
+       </div>
+       <p class="text-xs text-green-800">What's the desired outcome?</p>
+      </div>
+      <div class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-4 border border-orange-200">
+       <div class="flex items-center gap-2 mb-2"><span class="w-8 h-8 bg-orange-500 text-white rounded-lg flex items-center justify-center font-bold text-sm">C</span> <span class="font-bold text-orange-900 text-sm">Constraints</span>
+       </div>
+       <p class="text-xs text-orange-800">What are the limitations?</p>
+      </div>
+      <div class="bg-gradient-to-br from-teal-50 to-teal-100 rounded-xl p-4 border border-teal-200">
+       <div class="flex items-center gap-2 mb-2"><span class="w-8 h-8 bg-teal-500 text-white rounded-lg flex items-center justify-center font-bold text-sm">A</span> <span class="font-bold text-teal-900 text-sm">Actors</span>
+       </div>
+       <p class="text-xs text-teal-800">Who is affected by the problem?</p>
+      </div>
+     </div>
+    </div><!-- Main Form -->
+    <div class="glass rounded-3xl shadow-2xl p-6 md:p-8 mb-6">
+     <div class="flex items-center gap-3 mb-6">
+      <div class="w-12 h-12 bg-gradient-to-br from-teal-600 to-cyan-600 rounded-xl flex items-center justify-center"><span class="text-2xl">✍️</span>
+      </div>
+      <div>
+       <h2 class="text-2xl font-bold text-gray-800 font-display">Build Your Problem Statement</h2>
+       <p class="text-gray-600 text-sm">Fill in each element - get instant feedback and suggestions</p>
+      </div>
+     </div>
+     <form id="tosca-form" class="space-y-5"><!-- Owner -->
+      <div class="element-card bg-gradient-to-r from-purple-50 to-purple-100 rounded-2xl p-5 border-2 border-purple-200"><label class="block">
+        <div class="flex items-center justify-between mb-2">
+         <div class="flex items-center gap-2"><span class="w-10 h-10 bg-purple-600 text-white rounded-xl flex items-center justify-center font-bold shadow-lg">O</span>
+          <div><span class="font-bold text-purple-900 text-lg font-display">Owner</span>
+           <p class="text-xs text-purple-700">Who is responsible for solving this problem?</p>
+          </div>
+         </div><span id="owner-status" class="hidden text-green-600 font-bold text-xl check-icon">✓</span>
+        </div><input type="text" id="owner-input" oninput="handleOwnerInput()" onblur="generateOwnerParaphrase()" placeholder="e.g., University Facilities Department, City Transport Authority..." class="w-full px-4 py-3 border-2 border-purple-300 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-100 outline-none transition-all bg-white text-gray-800 font-medium"> <!-- Feedback -->
+        <div id="owner-feedback" class="hidden mt-3 p-3 rounded-lg"></div><!-- Paraphrase Suggestion -->
+        <div id="owner-paraphrase" class="hidden mt-3 bg-white border-2 border-purple-300 rounded-lg p-4 suggestion-badge">
+         <div class="flex items-start gap-3"><span class="text-2xl">💡</span>
+          <div class="flex-1">
+           <p class="font-semibold text-purple-900 text-sm mb-1">Suggested Refinement:</p>
+           <p id="owner-paraphrase-text" class="text-gray-800 mb-3"></p>
+           <div class="flex gap-2"><button type="button" onclick="acceptParaphrase('owner')" class="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-semibold hover:bg-purple-700 transition-all"> Use This </button> <button type="button" onclick="dismissParaphrase('owner')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-300 transition-all"> Keep Mine </button>
+           </div>
+          </div>
+         </div>
+        </div></label>
+      </div><!-- Trouble -->
+      <div class="element-card bg-gradient-to-r from-red-50 to-red-100 rounded-2xl p-5 border-2 border-red-200"><label class="block">
+        <div class="flex items-center justify-between mb-2">
+         <div class="flex items-center gap-2"><span class="w-10 h-10 bg-red-600 text-white rounded-xl flex items-center justify-center font-bold shadow-lg">T</span>
+          <div><span class="font-bold text-red-900 text-lg font-display">Trouble</span>
+           <p class="text-xs text-red-700">What's the core problem that needs to be addressed?</p>
+          </div>
+         </div><span id="trouble-status" class="hidden text-green-600 font-bold text-xl check-icon">✓</span>
+        </div><textarea id="trouble-input" rows="3" oninput="handleTroubleInput()" onblur="generateTroubleParaphrase()" placeholder="e.g., Students struggle to find available study spaces during exam periods, leading to stress..." class="w-full px-4 py-3 border-2 border-red-300 rounded-xl focus:border-red-500 focus:ring-4 focus:ring-red-100 outline-none transition-all resize-none bg-white text-gray-800"></textarea> <!-- Feedback -->
+        <div id="trouble-feedback" class="hidden mt-3 p-3 rounded-lg"></div><!-- Paraphrase Suggestion -->
+        <div id="trouble-paraphrase" class="hidden mt-3 bg-white border-2 border-red-300 rounded-lg p-4 suggestion-badge">
+         <div class="flex items-start gap-3"><span class="text-2xl">💡</span>
+          <div class="flex-1">
+           <p class="font-semibold text-red-900 text-sm mb-1">Suggested Refinement:</p>
+           <p id="trouble-paraphrase-text" class="text-gray-800 mb-3"></p>
+           <div class="flex gap-2"><button type="button" onclick="acceptParaphrase('trouble')" class="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-semibold hover:bg-red-700 transition-all"> Use This </button> <button type="button" onclick="dismissParaphrase('trouble')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-300 transition-all"> Keep Mine </button>
+           </div>
+          </div>
+         </div>
+        </div></label>
+      </div><!-- Success -->
+      <div class="element-card bg-gradient-to-r from-green-50 to-green-100 rounded-2xl p-5 border-2 border-green-200"><label class="block">
+        <div class="flex items-center justify-between mb-2">
+         <div class="flex items-center gap-2"><span class="w-10 h-10 bg-green-600 text-white rounded-xl flex items-center justify-center font-bold shadow-lg">S</span>
+          <div><span class="font-bold text-green-900 text-lg font-display">Success</span>
+           <p class="text-xs text-green-700">What does success look like? What's the ideal outcome?</p>
+          </div>
+         </div><span id="success-status" class="hidden text-green-600 font-bold text-xl check-icon">✓</span>
+        </div><textarea id="success-input" rows="3" oninput="handleSuccessInput()" onblur="generateSuccessParaphrase()" placeholder="e.g., Achieve 85% study space availability during peak exam periods..." class="w-full px-4 py-3 border-2 border-green-300 rounded-xl focus:border-green-500 focus:ring-4 focus:ring-green-100 outline-none transition-all resize-none bg-white text-gray-800"></textarea> <!-- Feedback -->
+        <div id="success-feedback" class="hidden mt-3 p-3 rounded-lg"></div><!-- Paraphrase Suggestion -->
+        <div id="success-paraphrase" class="hidden mt-3 bg-white border-2 border-green-300 rounded-lg p-4 suggestion-badge">
+         <div class="flex items-start gap-3"><span class="text-2xl">💡</span>
+          <div class="flex-1">
+           <p class="font-semibold text-green-900 text-sm mb-1">Suggested Refinement:</p>
+           <p id="success-paraphrase-text" class="text-gray-800 mb-3"></p>
+           <div class="flex gap-2"><button type="button" onclick="acceptParaphrase('success')" class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-semibold hover:bg-green-700 transition-all"> Use This </button> <button type="button" onclick="dismissParaphrase('success')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-300 transition-all"> Keep Mine </button>
+           </div>
+          </div>
+         </div>
+        </div></label>
+      </div><!-- Constraints -->
+      <div class="element-card bg-gradient-to-r from-orange-50 to-orange-100 rounded-2xl p-5 border-2 border-orange-200"><label class="block">
+        <div class="flex items-center justify-between mb-2">
+         <div class="flex items-center gap-2"><span class="w-10 h-10 bg-orange-600 text-white rounded-xl flex items-center justify-center font-bold shadow-lg">C</span>
+          <div><span class="font-bold text-orange-900 text-lg font-display">Constraints</span>
+           <p class="text-xs text-orange-700">What limitations or barriers exist?</p>
+          </div>
+         </div><span id="constraints-status" class="hidden text-green-600 font-bold text-xl check-icon">✓</span>
+        </div><textarea id="constraints-input" rows="2" oninput="handleConstraintsInput()" onblur="generateConstraintsParaphrase()" placeholder="Use commas or 'and' for multiple constraints: limited budget, limited time, and limited space." class="w-full px-4 py-3 border-2 border-orange-300 rounded-xl focus:border-orange-500 focus:ring-4 focus:ring-orange-100 outline-none transition-all resize-none bg-white text-gray-800"></textarea>
+        <p class="mt-2 text-xs text-orange-700">Tip: Separate multiple constraints with commas or “and”.</p> <!-- Feedback -->
+        <div id="constraints-feedback" class="hidden mt-3 p-3 rounded-lg"></div><!-- Paraphrase Suggestion -->
+        <div id="constraints-paraphrase" class="hidden mt-3 bg-white border-2 border-orange-300 rounded-lg p-4 suggestion-badge">
+         <div class="flex items-start gap-3"><span class="text-2xl">💡</span>
+          <div class="flex-1">
+           <p class="font-semibold text-orange-900 text-sm mb-1">Suggested Refinement:</p>
+           <p id="constraints-paraphrase-text" class="text-gray-800 mb-3"></p>
+           <div class="flex gap-2"><button type="button" onclick="acceptParaphrase('constraints')" class="px-4 py-2 bg-orange-600 text-white rounded-lg text-sm font-semibold hover:bg-orange-700 transition-all"> Use This </button> <button type="button" onclick="dismissParaphrase('constraints')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-300 transition-all"> Keep Mine </button>
+           </div>
+          </div>
+         </div>
+        </div></label>
+      </div><!-- Actors (Optional) -->
+      <div class="element-card bg-gradient-to-r from-teal-50 to-teal-100 rounded-2xl p-5 border-2 border-teal-200"><label class="block">
+        <div class="flex items-center gap-2 mb-2"><span class="w-10 h-10 bg-teal-600 text-white rounded-xl flex items-center justify-center font-bold shadow-lg">A</span>
+         <div><span class="font-bold text-teal-900 text-lg font-display">Actors <span class="text-sm font-normal text-teal-600">(Optional)</span></span>
+          <p class="text-xs text-teal-700">Who is affected by this problem?</p>
+         </div>
+        </div><input type="text" id="actors-input" placeholder="e.g., Students, librarians, teaching staff..." class="w-full px-4 py-3 border-2 border-teal-300 rounded-xl focus:border-teal-500 focus:ring-4 focus:ring-teal-100 outline-none transition-all bg-white text-gray-800"> </label>
+      </div><!-- Statement Type -->
+      <!--
+      <div class="bg-gradient-to-br from-cyan-50 to-teal-50 rounded-2xl p-5 border-2 border-cyan-200">
+       <h3 class="font-bold text-cyan-900 mb-3 font-display">Choose Statement Format</h3>
+       <div class="grid md:grid-cols-2 gap-3"><label class="cursor-pointer"> <input type="radio" name="statement-type" value="how" checked class="hidden peer">
+         <div class="peer-checked:bg-gradient-to-br peer-checked:from-teal-600 peer-checked:to-cyan-600 peer-checked:text-white peer-checked:border-teal-600 bg-white border-2 border-cyan-300 rounded-xl p-4 transition-all hover:border-cyan-400">
+          <div class="font-bold mb-1">
+           "How can..." Format
+          </div>
+          <div class="text-sm opacity-90">
+           How can [Owner] address [Trouble]...
+          </div>
+         </div></label> <label class="cursor-pointer"> <input type="radio" name="statement-type" value="what" class="hidden peer">
+         <div class="peer-checked:bg-gradient-to-br peer-checked:from-teal-600 peer-checked:to-cyan-600 peer-checked:text-white peer-checked:border-teal-600 bg-white border-2 border-cyan-300 rounded-xl p-4 transition-all hover:border-cyan-400">
+          <div class="font-bold mb-1">
+           "What strategies..." Format
+          </div>
+          <div class="text-sm opacity-90">
+           What strategies can [Owner] use...
+          </div>
+         </div></label>
+       </div>
+      </div>
+      -->
+      <!-- Generate Button --> <button type="button" onclick="generateStatement()" id="generate-btn" disabled class="w-full bg-gradient-to-r from-teal-600 via-cyan-600 to-teal-600 text-white py-4 px-6 rounded-xl font-bold text-lg shadow-2xl transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 hover:shadow-2xl"> <span class="text-2xl">⚡</span> <span>Generate Problem Statement</span> </button>
+     </form>
+    </div><!-- Generated Statement Section -->
+    <div id="statement-section" class="hidden glass rounded-3xl shadow-2xl p-6 md:p-8 mb-6 animate-slide-in">
+     <div class="flex items-center gap-3 mb-4">
+      <div class="w-12 h-12 bg-gradient-to-br from-emerald-600 to-green-600 rounded-xl flex items-center justify-center"><span class="text-2xl">📝</span>
+      </div>
+      <h2 class="text-2xl font-bold text-gray-800 font-display">Your Problem Statements</h2>
+     </div>
+     <p class="text-gray-600 text-sm mb-4">Choose the version you prefer, or edit either one to perfect your statement.</p><!-- Version 1 -->
+     <div class="bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 rounded-2xl p-5 border-2 border-emerald-300 mb-4">
+      <div class="flex items-center justify-between mb-3">
+       <div class="flex items-center gap-2"><span class="bg-emerald-600 text-white px-3 py-1 rounded-lg text-sm font-bold">Version 1</span> <span class="text-xs text-gray-600">Standard Format</span>
+       </div><button onclick="copyStatement('version1')" class="flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg text-sm font-semibold border-2 border-emerald-300 transition-all hover:scale-105"> <span id="copy-icon-version1">📋</span> <span id="copy-text-version1">Copy</span> </button>
+      </div><textarea id="generated-statement-version1" rows="4" class="w-full px-4 py-3 border-2 border-emerald-300 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 outline-none transition-all resize-none bg-white text-gray-800 font-medium leading-relaxed"></textarea>
+      <div class="flex justify-end mt-3"><button onclick="selectVersion('version1')" class="bg-gradient-to-r from-emerald-600 to-green-600 text-white py-2 px-6 rounded-lg font-bold hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center gap-2"> <span class="text-lg">✓</span> <span>Use This Version</span> </button>
+      </div>
+     </div><!-- Version 2 -->
+     <div class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 rounded-2xl p-5 border-2 border-blue-300 mb-4">
+      <div class="flex items-center justify-between mb-3">
+       <div class="flex items-center gap-2"><span class="bg-blue-600 text-white px-3 py-1 rounded-lg text-sm font-bold">Version 2</span> <span class="text-xs text-gray-600">Alternative Format</span>
+       </div><button onclick="copyStatement('version2')" class="flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg text-sm font-semibold border-2 border-blue-300 transition-all hover:scale-105"> <span id="copy-icon-version2">📋</span> <span id="copy-text-version2">Copy</span> </button>
+      </div><textarea id="generated-statement-version2" rows="4" class="w-full px-4 py-3 border-2 border-blue-300 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all resize-none bg-white text-gray-800 font-medium leading-relaxed"></textarea>
+      <div class="flex justify-end mt-3"><button onclick="selectVersion('version2')" class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-2 px-6 rounded-lg font-bold hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center gap-2"> <span class="text-lg">✓</span> <span>Use This Version</span> </button>
+      </div>
+     </div><!-- Version 3 -->
+     <div class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 rounded-2xl p-5 border-2 border-blue-300 mb-4">
+      <div class="flex items-center justify-between mb-3">
+       <div class="flex items-center gap-2"><span class="bg-blue-600 text-white px-3 py-1 rounded-lg text-sm font-bold">Version 3</span> <span class="text-xs text-gray-600">Exploratory Format</span>
+       </div><button onclick="copyStatement('version3')" class="flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg text-sm font-semibold border-2 border-blue-300 transition-all hover:scale-105"> <span id="copy-icon-version3"> 📋</span> <span id="copy-text-version3">Copy</span> </button>
+      </div><textarea id="generated-statement-version3" rows="4" class="w-full px-4 py-3 border-2 border-blue-300 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all resize-none bg-white text-gray-800 font-medium leading-relaxed"></textarea>
+      <div class="flex justify-end mt-3"><button onclick="selectVersion('version3')" class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-2 px-6 rounded-lg font-bold hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center gap-2"> <span class="text-lg"></span> <span>Use This Version</span> </button>
+      </div>
+     </div><!-- Satisfaction Check -->
+     <div class="bg-white rounded-2xl p-6 border-2 border-gray-200 mb-4">
+      <h3 class="font-bold text-gray-800 text-lg mb-3 font-display">Need to make changes?</h3>
+      <p class="text-gray-600 text-sm mb-4">You can edit either version above, or go back to modify the inputs.</p>
+      <div class="flex gap-3"><button onclick="refineStatement()" class="flex-1 bg-gradient-to-r from-orange-500 to-amber-500 text-white py-3 px-6 rounded-xl font-bold hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"> <span class="text-xl">✏️</span> <span>Edit Inputs</span> </button>
+      </div>
+     </div><!-- Overall Feedback -->
+     <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border-2 border-blue-200">
+      <h3 class="font-bold text-blue-900 text-lg mb-3 font-display flex items-center gap-2"><span class="text-2xl">📊</span> Quality Assessment</h3>
+      <div id="overall-feedback" class="space-y-3"></div>
+     </div>
+    </div><!-- Success Confirmation -->
+    <div id="success-confirmation" class="hidden glass rounded-3xl shadow-2xl p-8 mb-6 animate-slide-in text-center">
+     <div class="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-xl"><span class="text-4xl">🎉</span>
+     </div>
+     <h2 class="text-3xl font-bold text-gray-800 mb-3 font-display">Excellent Work!</h2>
+     <p class="text-gray-600 text-lg mb-6">Your TOSCA problem statement has been successfully created.</p>
+     <div class="bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl p-5 border-2 border-emerald-200 mb-6 relative">
+      <p id="final-statement" class="text-gray-800 font-medium text-lg leading-relaxed mb-4"></p><button onclick="copyFinalStatement()" class="bg-white hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg text-sm font-semibold border-2 border-emerald-300 transition-all hover:scale-105 flex items-center gap-2 mx-auto"> <span id="copy-icon-final">📋</span> <span id="copy-text-final">Copy Statement</span> </button>
+     </div><button onclick="startOver()" class="bg-gradient-to-r from-teal-600 to-cyan-600 text-white py-3 px-8 rounded-xl font-bold hover:shadow-xl hover:scale-105 transition-all duration-300"> Create Another Statement </button>
+    </div><!-- Educational Purpose Notice - Compact Footer -->
+    <div class="glass rounded-2xl shadow-xl p-5 mb-6 border-2 border-blue-200">
+     
+      <div class="flex items-center gap-4">
+  <div class="flex-shrink-0">
+    <div class="w-20 h-20 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl flex items-center justify-center shadow-xl">
+      <span class="text-[14px] leading-[14px] text-white font-extrabold text-center tracking-tight">
+        Pay<br>attention
+      </span>
+    </div>
+  </div>
+
+  <div class="flex-1">
+    <div class="flex items-center gap-2 mb-1">
+      <h3 class="text-lg font-extrabold text-gray-900 font-display m-0">Educational Tool</h3>
+      <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-amber-100 text-amber-900 border border-amber-300">
+        BETA
+      </span>
+    </div>
+
+    <div class="text-sm text-gray-700 space-y-2 leading-relaxed">
+      <p><strong>🎓 Purpose:</strong> This tool provides basic structural guidance for the TOSCA framework using simple rules. It may make mistakes. Use it as a starting point, then revise the wording to fit your context.</p>
+      <p><strong>🧑‍🏫 Teacher support:</strong> You can share your generated problem statement with your teacher for meaningful feedback and improvement.</p>
+      <p><strong>⚠️ Important:</strong> This tool supports learning, but it cannot replace critical thinking or expert guidance.</p>
+    </div>
+  </div>
+</div>
+
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+    // Default configuration
+    const defaultConfig = {
+      main_title: 'TOSCA Problem Statement Generator',
+      subtitle: 'Build structured problem statements with intelligent feedback and paraphrasing'
+    };
+
+    // Paraphrase suggestions storage
+    const paraphrases = {
+      owner: '',
+      trouble: '',
+      success: '',
+      constraints: ''
+    };
+
+    // Validation state
+    const validationState = {
+      owner: false,
+      trouble: false,
+      success: false,
+      constraints: false
+    };
+
+    // Initialize Element SDK
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange: async (config) => {
+          document.getElementById('main-title').textContent = config.main_title || defaultConfig.main_title;
+          document.getElementById('subtitle').textContent = config.subtitle || defaultConfig.subtitle;
+        },
+        mapToCapabilities: () => ({
+          recolorables: [],
+          borderables: [],
+          fontEditable: undefined,
+          fontSizeable: undefined
+        }),
+        mapToEditPanelValues: (config) => new Map([
+          ['main_title', config.main_title || defaultConfig.main_title],
+          ['subtitle', config.subtitle || defaultConfig.subtitle]
+        ])
+      });
+    }
+
+    // Update progress tracker
+    function updateProgress() {
+      const completed = Object.values(validationState).filter(v => v).length;
+      const total = 4;
+      const percentage = (completed / total) * 100;
+      
+      document.getElementById('progress-text').textContent = `${completed}/${total} Complete`;
+      
+      const circle = document.getElementById('progress-circle');
+      const circumference = 125.6;
+      const offset = circumference - (percentage / 100 * circumference);
+      circle.style.strokeDashoffset = offset;
+      
+      // Update step indicators
+      Object.keys(validationState).forEach(field => {
+        const stepEl = document.getElementById(`step-${field}`);
+        if (validationState[field]) {
+          stepEl.classList.remove('bg-gray-100', 'border-gray-200');
+          stepEl.classList.add('bg-green-100', 'border-green-400');
+          stepEl.querySelector('div').classList.remove('text-gray-500');
+          stepEl.querySelector('div').classList.add('text-green-700');
+        } else {
+          stepEl.classList.remove('bg-green-100', 'border-green-400');
+          stepEl.classList.add('bg-gray-100', 'border-gray-200');
+          stepEl.querySelector('div').classList.remove('text-green-700');
+          stepEl.querySelector('div').classList.add('text-gray-500');
+        }
+      });
+      
+      // Enable/disable generate button
+      const allComplete = Object.values(validationState).every(v => v);
+      document.getElementById('generate-btn').disabled = !allComplete;
+    }
+
+    // Check for gibberish or random typing
+    function isGibberish(text) {
+      // Check for excessive repeated patterns (e.g., "asdasdasd")
+      const repeatedPatterns = /(.{2,})\1{3,}/gi;
+      if (repeatedPatterns.test(text)) return true;
+      
+      // Check for very low vowel ratio (gibberish often has few vowels)
+      const vowels = text.match(/[aeiou]/gi);
+      const consonants = text.match(/[bcdfghjklmnpqrstvwxyz]/gi);
+      if (consonants && vowels) {
+        const vowelRatio = vowels.length / (vowels.length + consonants.length);
+        if (vowelRatio < 0.15) return true; // Less than 15% vowels is suspicious
+      }
+      
+      // Check for keyboard mashing patterns (adjacent keys)
+      const mashPatterns = /(qwe|wer|ert|rty|tyu|yui|uio|iop|asd|sdf|dfg|fgh|ghj|hjk|jkl|zxc|xcv|cvb|vbn|bnm){3,}/gi;
+      if (mashPatterns.test(text)) return true;
+      
+      return false;
+    }
+
+    // Show warning message
+    function showWarning(message, fields) {
+      const warningDiv = document.createElement('div');
+      warningDiv.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-6 py-4 rounded-xl shadow-2xl z-50 animate-slide-in max-w-md';
+      warningDiv.style.transform = 'translate(-50%, 0)';
+      warningDiv.innerHTML = `
+        <div class="flex items-start gap-3">
+          <span class="text-2xl">⚠️</span>
+          <div>
+            <p class="font-bold mb-1">Please Enter Meaningful Text</p>
+            <p class="text-sm">${message}: <strong>${fields.join(', ')}</strong></p>
+            <p class="text-sm mt-2">Please provide real problem statement content to generate a useful result.</p>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(warningDiv);
+      
+      setTimeout(() => {
+        warningDiv.style.opacity = '0';
+        warningDiv.style.transform = 'translate(-50%, -20px)';
+        warningDiv.style.transition = 'all 0.3s ease';
+        setTimeout(() => warningDiv.remove(), 300);
+      }, 5000);
+    }
+
+    // Owner input handler
+    function handleOwnerInput() {
+      const value = document.getElementById('owner-input').value.trim();
+      const feedbackEl = document.getElementById('owner-feedback');
+      const statusEl = document.getElementById('owner-status');
+      
+      // Require at least 5 characters to avoid incomplete words
+      if (value.length < 5) {
+        feedbackEl.innerHTML = `
+          <div class="flex items-start gap-2">
+            <span class="text-gray-500">��</span>
+            <div>
+              <p class="font-semibold text-gray-700 text-sm">Keep typing...</p>
+              <p class="text-gray-600 text-xs">Enter the full organization name.</p>
+            </div>
+          </div>
+        `;
+        feedbackEl.classList.remove('hidden', 'bg-green-50', 'border-green-300', 'bg-blue-50', 'border-blue-300');
+        feedbackEl.classList.add('bg-gray-50', 'border-gray-300', 'border-2');
+        statusEl.classList.add('hidden');
+        validationState.owner = false;
+        updateProgress();
+        return;
+      }
+      
+      // Check for generic terms - just warn but still accept
+      const genericTerms = ['government', 'the government', 'authorities', 'people', 'someone', 'they'];
+      const isGeneric = genericTerms.some(term => value.toLowerCase().includes(term));
+      
+      if (isGeneric) {
+        feedbackEl.innerHTML = `
+          <div class="flex items-start gap-2">
+            <span class="text-blue-600">💡</span>
+            <div>
+              <p class="font-semibold text-blue-800 text-sm">Tip: Be more specific</p>
+              <p class="text-blue-700 text-xs">Consider naming a specific department or organization for clarity.</p>
+            </div>
+          </div>
+        `;
+        feedbackEl.classList.remove('hidden', 'bg-green-50', 'border-green-300');
+        feedbackEl.classList.add('bg-blue-50', 'border-blue-300', 'border-2');
+        statusEl.classList.remove('hidden');
+        validationState.owner = true;
+      } else {
+        feedbackEl.innerHTML = `
+          <div class="flex items-start gap-2">
+            <span class="text-green-600">✓</span>
+            <div>
+              <p class="font-semibold text-green-800 text-sm">Great!</p>
+              <p class="text-green-700 text-xs">Owner identified.</p>
+            </div>
+          </div>
+        `;
+        feedbackEl.classList.remove('hidden', 'bg-blue-50', 'border-blue-300');
+        feedbackEl.classList.add('bg-green-50', 'border-green-300', 'border-2');
+        statusEl.classList.remove('hidden');
+        validationState.owner = true;
+      }
+      
+      updateProgress();
+    }
+
+    // Generate Owner paraphrase
+    function generateOwnerParaphrase() {
+      const value = document.getElementById('owner-input').value.trim();
+      if (!validationState.owner || value.length < 10) return;
+      
+      const paraphraseEl = document.getElementById('owner-paraphrase');
+      const paraphraseTextEl = document.getElementById('owner-paraphrase-text');
+      
+      // Simple paraphrasing rules
+      let suggestion = value;
+      
+      // Add "the" if missing
+      if (!value.toLowerCase().startsWith('the ')) {
+        suggestion = 'the ' + suggestion;
+      }
+      
+      // Capitalize properly
+      suggestion = suggestion.split(' ').map((word, idx) => {
+        if (idx === 0 || word.length > 3) {
+          return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+        }
+        return word.toLowerCase();
+      }).join(' ');
+      
+      // Only show if different
+      if (suggestion !== value && suggestion.toLowerCase() !== value.toLowerCase()) {
+        paraphrases.owner = suggestion;
+        paraphraseTextEl.textContent = suggestion;
+        paraphraseEl.classList.remove('hidden');
+      }
+    }
+
+    // Trouble input handler
+    function handleTroubleInput() {
+      const value = document.getElementById('trouble-input').value.trim();
+      const feedbackEl = document.getElementById('trouble-feedback');
+      const statusEl = document.getElementById('trouble-status');
+      
+      // Require at least 10 characters for a meaningful problem description
+      const wordCount = value.split(/\s+/).filter(w => w.length > 0).length;
+      
+      if (value.length < 10 || wordCount < 3) {
+        feedbackEl.innerHTML = `
+          <div class="flex items-start gap-2">
+            <span class="text-gray-500">⏳</span>
+            <div>
+              <p class="font-semibold text-gray-700 text-sm">Keep typing...</p>
+              <p class="text-gray-600 text-xs">Describe the problem clearly (at least 3 words).</p>
+            </div>
+          </div>
+        `;
+        feedbackEl.classList.remove('hidden', 'bg-green-50', 'border-green-300');
+        feedbackEl.classList.add('bg-gray-50', 'border-gray-300', 'border-2');
+        statusEl.classList.add('hidden');
+        validationState.trouble = false;
+        updateProgress();
+        return;
+      }
+      
+      // Just give positive feedback - accept everything
+      feedbackEl.innerHTML = `
+        <div class="flex items-start gap-2">
+          <span class="text-green-600">✓</span>
+          <div>
+            <p class="font-semibold text-green-800 text-sm">Problem identified!</p>
+            <p class="text-green-700 text-xs">You can add more details if needed.</p>
+          </div>
+        </div>
+      `;
+      feedbackEl.classList.remove('hidden', 'bg-gray-50', 'border-gray-300');
+      feedbackEl.classList.add('bg-green-50', 'border-green-300', 'border-2');
+      statusEl.classList.remove('hidden');
+      validationState.trouble = true;
+      
+      updateProgress();
+    }
+
+    // Generate Trouble paraphrase
+    function generateTroubleParaphrase() {
+      const value = document.getElementById('trouble-input').value.trim();
+      if (!validationState.trouble || value.length < 20) return;
+      
+      const paraphraseEl = document.getElementById('trouble-paraphrase');
+      const paraphraseTextEl = document.getElementById('trouble-paraphrase-text');
+      
+      let suggestion = value;
+      
+      // Convert to lowercase start
+      suggestion = suggestion.charAt(0).toLowerCase() + suggestion.slice(1);
+      
+      // Remove trailing period if exists
+      suggestion = suggestion.replace(/\.$/, '');
+      
+      // Replace common informal phrases
+      const replacements = {
+        "don't have": "lack",
+        "can't find": "struggle to locate",
+        "don't get": "lack access to",
+        "can't access": "lack access to",
+        "are not able to": "cannot",
+        "is not able to": "cannot"
+      };
+      
+      Object.keys(replacements).forEach(key => {
+        const regex = new RegExp(key, 'gi');
+        suggestion = suggestion.replace(regex, replacements[key]);
+      });
+      
+      // Only show if meaningfully different
+      if (suggestion !== value && suggestion.length !== value.length) {
+        paraphrases.trouble = suggestion;
+        paraphraseTextEl.textContent = suggestion;
+        paraphraseEl.classList.remove('hidden');
+      }
+    }
+
+    // Success input handler
+    function handleSuccessInput() {
+      const value = document.getElementById('success-input').value.trim();
+      const feedbackEl = document.getElementById('success-feedback');
+      const statusEl = document.getElementById('success-status');
+      
+      // Require at least 10 characters and 3 words
+      const wordCount = value.split(/\s+/).filter(w => w.length > 0).length;
+      if (value.length < 10 || wordCount < 3) {
+        feedbackEl.innerHTML = `
+          <div class="flex items-start gap-2">
+            <span class="text-gray-500">⏳</span>
+            <div>
+              <p class="font-semibold text-gray-700 text-sm">Keep typing...</p>
+              <p class="text-gray-600 text-xs">Describe the desired outcome (at least 3 words).</p>
+            </div>
+          </div>
+        `;
+        feedbackEl.classList.remove('hidden', 'bg-green-50', 'border-green-300', 'bg-blue-50', 'border-blue-300');
+        feedbackEl.classList.add('bg-gray-50', 'border-gray-300', 'border-2');
+        statusEl.classList.add('hidden');
+        validationState.success = false;
+        updateProgress();
+        return;
+      }
+      
+      // Check for measurable metrics - just give tips, but accept anyway
+      const hasNumbers = /\d+/.test(value);
+      const measureWords = ['increase', 'decrease', 'achieve', 'reach', 'improve', 'reduce', '%', 'percent'];
+      const hasMeasurableLanguage = measureWords.some(word => value.toLowerCase().includes(word));
+      
+      if (!hasNumbers && !hasMeasurableLanguage) {
+        feedbackEl.innerHTML = `
+          <div class="flex items-start gap-2">
+            <span class="text-blue-600">💡</span>
+            <div>
+              <p class="font-semibold text-blue-800 text-sm">Success defined!</p>
+              <p class="text-blue-700 text-xs">Tip: Adding numbers or metrics can make goals clearer.</p>
+            </div>
+          </div>
+        `;
+        feedbackEl.classList.remove('hidden', 'bg-green-50', 'border-green-300', 'bg-gray-50', 'border-gray-300');
+        feedbackEl.classList.add('bg-blue-50', 'border-blue-300', 'border-2');
+        statusEl.classList.remove('hidden');
+        validationState.success = true;
+      } else {
+        feedbackEl.innerHTML = `
+          <div class="flex items-start gap-2">
+            <span class="text-green-600">✓</span>
+            <div>
+              <p class="font-semibold text-green-800 text-sm">Excellent!</p>
+              <p class="text-green-700 text-xs">Clear success criteria with measurable goals.</p>
+            </div>
+          </div>
+        `;
+        feedbackEl.classList.remove('hidden', 'bg-blue-50', 'border-blue-300', 'bg-gray-50', 'border-gray-300');
+        feedbackEl.classList.add('bg-green-50', 'border-green-300', 'border-2');
+        statusEl.classList.remove('hidden');
+        validationState.success = true;
+      }
+      
+      updateProgress();
+    }
+
+    // Generate Success paraphrase
+    function generateSuccessParaphrase() {
+      const value = document.getElementById('success-input').value.trim();
+      if (!validationState.success || value.length < 15) return;
+      
+      const paraphraseEl = document.getElementById('success-paraphrase');
+      const paraphraseTextEl = document.getElementById('success-paraphrase-text');
+      
+      let suggestion = value;
+      
+      // Ensure it starts with a verb or "to + verb"
+      const startsWithVerb = /^(achieve|reach|provide|create|establish|improve|increase|reduce|ensure|obtain)/i.test(suggestion);
+      
+      if (!startsWithVerb && !suggestion.toLowerCase().startsWith('to ')) {
+        if (/^[a-z]/.test(suggestion)) {
+          suggestion = 'achieve ' + suggestion;
+        }
+      }
+      
+      // Lowercase start
+      suggestion = suggestion.charAt(0).toLowerCase() + suggestion.slice(1);
+      
+      // Remove trailing period
+      suggestion = suggestion.replace(/\.$/, '');
+      
+      if (suggestion !== value && suggestion.toLowerCase() !== value.toLowerCase()) {
+        paraphrases.success = suggestion;
+        paraphraseTextEl.textContent = suggestion;
+        paraphraseEl.classList.remove('hidden');
+      }
+    }
+
+    // Constraints input handler
+    function handleConstraintsInput() {
+      const value = document.getElementById('constraints-input').value.trim();
+      const feedbackEl = document.getElementById('constraints-feedback');
+      const statusEl = document.getElementById('constraints-status');
+      
+      // Require at least 5 characters for meaningful constraint
+      if (value.length < 5) {
+        feedbackEl.innerHTML = `
+          <div class="flex items-start gap-2">
+            <span class="text-gray-500">⏳</span>
+            <div>
+              <p class="font-semibold text-gray-700 text-sm">Keep typing...</p>
+              <p class="text-gray-600 text-xs">Describe limitations or barriers.</p>
+            </div>
+          </div>
+        `;
+        feedbackEl.classList.remove('hidden', 'bg-green-50', 'border-green-300');
+        feedbackEl.classList.add('bg-gray-50', 'border-gray-300', 'border-2');
+        statusEl.classList.add('hidden');
+        validationState.constraints = false;
+        updateProgress();
+        return;
+      }
+      
+      // Just give positive feedback - accept everything
+      feedbackEl.innerHTML = `
+        <div class="flex items-start gap-2">
+          <span class="text-green-600">✓</span>
+          <div>
+            <p class="font-semibold text-green-800 text-sm">Constraint identified!</p>
+            <p class="text-green-700 text-xs">You can add more details if needed.</p>
+          </div>
+        </div>
+      `;
+      feedbackEl.classList.remove('hidden', 'bg-gray-50', 'border-gray-300');
+      feedbackEl.classList.add('bg-green-50', 'border-green-300', 'border-2');
+      statusEl.classList.remove('hidden');
+      validationState.constraints = true;
+      
+      updateProgress();
+    }
+
+    // Generate Constraints paraphrase
+    function generateConstraintsParaphrase() {
+      const value = document.getElementById('constraints-input').value.trim();
+      if (!validationState.constraints || value.length < 10) return;
+      
+      const paraphraseEl = document.getElementById('constraints-paraphrase');
+      const paraphraseTextEl = document.getElementById('constraints-paraphrase-text');
+      
+      let suggestion = value;
+      
+      // Lowercase start
+      suggestion = suggestion.charAt(0).toLowerCase() + suggestion.slice(1);
+      
+      // Remove trailing period
+      suggestion = suggestion.replace(/\.$/, '');
+      
+      // Make more formal
+      const replacements = {
+        "we have": "having",
+        "we can't": "inability to",
+        "we cannot": "inability to",
+        "there is": "",
+        "there are": ""
+      };
+      
+      Object.keys(replacements).forEach(key => {
+        const regex = new RegExp(key, 'gi');
+        suggestion = suggestion.replace(regex, replacements[key]);
+      });
+      
+      // Clean up extra spaces
+      suggestion = suggestion.replace(/\s+/g, ' ').trim();
+      
+      if (suggestion !== value && suggestion.length > 5) {
+        paraphrases.constraints = suggestion;
+        paraphraseTextEl.textContent = suggestion;
+        paraphraseEl.classList.remove('hidden');
+      }
+    }
+
+    // Accept paraphrase
+    function acceptParaphrase(field) {
+      const inputEl = document.getElementById(`${field}-input`);
+      inputEl.value = paraphrases[field];
+      dismissParaphrase(field);
+      
+      // Retrigger validation
+      if (field === 'owner') handleOwnerInput();
+      else if (field === 'trouble') handleTroubleInput();
+      else if (field === 'success') handleSuccessInput();
+      else if (field === 'constraints') handleConstraintsInput();
+    }
+
+    // Dismiss paraphrase
+    function dismissParaphrase(field) {
+      document.getElementById(`${field}-paraphrase`).classList.add('hidden');
+    }
+
+    // Generate statement - ENHANCED VERSION WITH TWO VARIATIONS
+    function generateStatement() {
+      let owner = document.getElementById('owner-input').value.trim();
+      let trouble = document.getElementById('trouble-input').value.trim();
+      let success = document.getElementById('success-input').value.trim();
+      let constraints = document.getElementById('constraints-input').value.trim();
+      
+      // Check for gibberish in any field
+      const fieldsToCheck = [
+        { value: owner, name: 'Owner' },
+        { value: trouble, name: 'Trouble' },
+        { value: success, name: 'Success' },
+        { value: constraints, name: 'Constraints' }
+      ];
+      
+      const gibberishFields = fieldsToCheck.filter(field => isGibberish(field.value));
+      
+      if (gibberishFields.length > 0) {
+        showWarning('The following fields appear to contain random typing', gibberishFields.map(f => f.name));
+        return;
+      }
+      
+      const version1 = generateStatementVersion(owner, trouble, success, constraints, 'how');
+      const version2 = generateStatementVersion(owner, trouble, success, constraints, 'what');
+      const version3 = generateStatementVersion(owner, trouble, success, constraints, 'ways');
+
+      document.getElementById('generated-statement-version1').value = version1;
+      document.getElementById('generated-statement-version2').value = version2;
+      document.getElementById('generated-statement-version3').value = version3;
+      document.getElementById('statement-section').classList.remove('hidden');
+      
+      generateOverallFeedback();
+      
+      document.getElementById('statement-section').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    // Generate a specific version of the statement
+    function generateStatementVersion(ownerInput, troubleInput, successInput, constraintsInput, statementType) {
+      let owner = ownerInput;
+      let trouble = troubleInput;
+      let success = successInput;
+      let constraints = constraintsInput;
+      
+      // === OWNER PROCESSING ===
+      // Owner: ensure "the" prefix but do NOT force capitalization
+      owner = owner.trim();
+      owner = owner.replace(/^the\s+/i, 'the ');
+      if (!owner.toLowerCase().startsWith('the ')) {
+        owner = 'the ' + owner;
+      }
+      owner = 'the ' + owner.slice(4);
+      
+      // === TROUBLE PROCESSING ===
+      // ALWAYS start with lowercase
+      trouble = trouble.charAt(0).toLowerCase() + trouble.slice(1);
+      trouble = trouble.replace(/\.$/, '');
+      
+      // VERSION 1: Standard phrasing
+      let troubleV1 = trouble;
+      if (troubleV1.startsWith('no ')) {
+        troubleV1 = 'the issue of having ' + troubleV1;
+      } else if (troubleV1.startsWith('lack of ')) {
+        troubleV1 = 'the issue of ' + troubleV1;
+      } else if (!troubleV1.startsWith('the ') && !troubleV1.includes(' is ') && !troubleV1.includes(' are ')) {
+        troubleV1 = 'the issue of ' + troubleV1;
+      }
+      
+      // VERSION 2: Alternative phrasing - more direct/action-oriented
+      let troubleV2 = trouble;
+      if (troubleV2.startsWith('no ')) {
+        troubleV2 = 'the challenge of ' + troubleV2;
+      } else if (troubleV2.startsWith('lack of ')) {
+        troubleV2 = 'the problem of ' + troubleV2;
+      } else if (troubleV2.startsWith('the issue of ')) {
+        troubleV2 = troubleV2.replace('the issue of ', 'the challenge of ');
+      } else if (!troubleV2.startsWith('the ') && !troubleV2.includes(' is ') && !troubleV2.includes(' are ')) {
+        troubleV2 = 'the problem of ' + troubleV2;
+      }
+      
+      const normalizeSuccess = (value) => {
+        let text = value.trim();
+        if (!text) return text;
+
+        const lower = text.toLowerCase();
+        const verbStarters = [
+          'to', 'achieve', 'establish', 'create', 'develop', 'implement', 'improve',
+          'increase', 'reduce', 'ensure', 'provide', 'build', 'introduce', 'upgrade',
+          'expand', 'streamline', 'standardize', 'deliver'
+        ];
+        const startsWithVerb = verbStarters.some(verb => lower.startsWith(verb + ' '));
+        if (startsWithVerb) return text;
+
+        if (lower.startsWith('better ')) {
+          return 'improve ' + text.slice(7).trim();
+        }
+
+        const metricWords = [
+          'reduce', 'reduction', 'increase', 'improvement', 'accuracy', 'errors',
+          'time', 'cost', 'efficiency', 'rate', 'satisfaction'
+        ];
+        const hasMetricWord = metricWords.some(word => lower.includes(word));
+        const hasPercent = /%|\bpercent\b|\bpercentage\b/.test(lower);
+        if (hasPercent || hasMetricWord) {
+          return 'achieve ' + text;
+        }
+
+        const ensureWords = ['availability', 'access', 'coverage', 'uptime', 'visibility'];
+        if (ensureWords.some(word => lower.includes(word))) {
+          return 'ensure ' + text;
+        }
+
+        const implementWords = [
+          'system', 'platform', 'app', 'tool', 'website', 'process', 'workflow',
+          'service', 'policy', 'strategy', 'plan', 'procedure'
+        ];
+        if (implementWords.some(word => lower.includes(word))) {
+          return 'implement ' + text;
+        }
+
+        return 'create ' + text;
+      };
+
+      const normalizeConstraint = (value) => {
+        let text = value.trim();
+        if (!text) return text;
+        text = text.replace(/^(lack of|no|limited|insufficient)\s+/i, '');
+        text = text.replace(/\s+/g, ' ').trim();
+        return text;
+      };
+
+      // === SUCCESS PROCESSING ===
+      success = normalizeSuccess(success);
+
+      // ALWAYS start with lowercase
+      success = success.charAt(0).toLowerCase() + success.slice(1);
+      success = success.replace(/\.$/, '');
+      
+      // Remove awkward phrases
+      if (success.includes('there should be') || success.includes('should be')) {
+        success = success.replace(/there should be (a |an |the )?/gi, '');
+        success = success.replace(/should be (a |an |the )?/gi, '');
+      }
+      
+      // Enhanced verb to gerund conversion
+      const verbToGerund = {
+        'establish ': 'establishing ',
+        'create ': 'creating ',
+        'build ': 'building ',
+        'develop ': 'developing ',
+        'implement ': 'implementing ',
+        'provide ': 'providing ',
+        'ensure ': 'ensuring ',
+        'achieve ': 'achieving ',
+        'reduce ': 'reducing ',
+        'increase ': 'increasing ',
+        'improve ': 'improving ',
+        'upgrade ': 'upgrading ',
+        'obtain ': 'obtaining ',
+        'reach ': 'reaching ',
+        'deliver ': 'delivering ',
+        'expand ': 'expanding ',
+        'streamline ': 'streamlining ',
+        'standardize ': 'standardizing ',
+        'introduce ': 'introducing '
+      };
+      
+      let needsByPrefix = false;
+      let originalVerb = '';
+      Object.keys(verbToGerund).forEach(verb => {
+        if (success.startsWith(verb)) {
+          originalVerb = verb.trim();
+          success = success.replace(verb, verbToGerund[verb]);
+          needsByPrefix = true;
+        }
+      });
+      
+      // VERSION 1: "by establishing" format
+      let successV1 = success;
+      if (needsByPrefix && !successV1.startsWith('by ')) {
+        successV1 = 'by ' + successV1;
+      } else if (!successV1.startsWith('by ') && !successV1.startsWith('to ')) {
+        // Check content type to determine prefix
+        if (successV1.includes('playground') || successV1.includes('space') || successV1.includes('facility') || 
+            successV1.includes('service') || successV1.includes('system') || successV1.includes('program') ||
+            successV1.includes('bins') || successV1.includes('labs') || successV1.includes('technology')) {
+          successV1 = 'by establishing ' + successV1;
+        } else if (successV1.includes('satisfaction') || successV1.includes('rate') || successV1.includes('level') ||
+                   successV1.includes('availability') || successV1.includes('wait time') || successV1.includes('time to under')) {
+          successV1 = 'to ' + successV1;
+        } else {
+          successV1 = 'to achieve ' + successV1;
+        }
+      }
+      successV1 = successV1.replace(/^(by |to )(.)/, (match, prefix, letter) => prefix + letter.toLowerCase());
+      
+      // VERSION 2: "in order to" format - more goal-oriented
+      let successV2 = success;
+      // Convert back to infinitive form for version 2
+      if (needsByPrefix && originalVerb) {
+        successV2 = successV2.replace(verbToGerund[originalVerb + ' '], originalVerb + ' ');
+      }
+      
+      if (!successV2.startsWith('in order to ') && !successV2.startsWith('to ')) {
+        if (successV2.startsWith('by ')) {
+          successV2 = successV2.replace('by ', 'in order to ');
+        } else {
+          successV2 = 'in order to ' + successV2;
+        }
+      } else if (successV2.startsWith('to ')) {
+        successV2 = 'in order ' + successV2;
+      }
+      successV2 = successV2.replace(/^(in order to )(.)/, (match, prefix, letter) => prefix + letter.toLowerCase());
+      
+      // === CONSTRAINTS PROCESSING ===
+      let constraintsList = [];
+      if (constraints.includes(',') || constraints.includes(' and ')) {
+        constraintsList = constraints.split(/,| and /).map(c => c.trim()).filter(c => c.length > 0);
+      } else {
+        constraintsList = [constraints];
+      }
+
+      if (constraintsList.length === 1) {
+        const singleConstraint = constraintsList[0].trim();
+        const prefixMatches = singleConstraint.match(/\b(?:lack of|no|limited|insufficient)\b/gi);
+        if (prefixMatches && prefixMatches.length > 1) {
+          const segments = singleConstraint.match(/(?:lack of|no|limited|insufficient)\s+.*?(?=(?:lack of|no|limited|insufficient)\s+|$)/gi);
+          if (segments && segments.length > 1) {
+            constraintsList = segments;
+          }
+        }
+      }
+
+      const trimmedConstraints = constraintsList.map(c => c.trim()).filter(c => c.length > 0);
+      const cleanedConstraints = trimmedConstraints.map(normalizeConstraint).filter(c => c.length > 0);
+      const useGroupedConstraints = cleanedConstraints.length >= 2;
+      const constraintsTextList = (useGroupedConstraints ? cleanedConstraints : trimmedConstraints).map(c => {
+        c = c.charAt(0).toLowerCase() + c.slice(1);
+        c = c.replace(/\.$/, '');
+        c = c.replace(/^(the |a |an )/, '');
+        c = c.replace(/\s+/g, ' ').trim();
+        return c;
+      });
+      
+      // VERSION 1: "considering" format
+      let constraintsTextV1 = '';
+      let joinedConstraints = '';
+      if (constraintsTextList.length === 1) {
+        constraintsTextV1 = constraintsTextList[0];
+      } else if (constraintsTextList.length === 2) {
+        joinedConstraints = constraintsTextList.join(' and ');
+        constraintsTextV1 = `constraints related to ${joinedConstraints}`;
+      } else if (constraintsTextList.length > 2) {
+        joinedConstraints = constraintsTextList.slice(0, -1).join(', ') + ', and ' + constraintsTextList[constraintsTextList.length - 1];
+        constraintsTextV1 = `constraints related to ${joinedConstraints}`;
+      }
+      
+      // VERSION 2: "while facing" / "despite" format - more challenge-focused
+      let constraintsTextV2 = '';
+      if (constraintsTextList.length === 1) {
+        constraintsTextV2 = constraintsTextList[0];
+      } else if (constraintsTextList.length === 2) {
+        constraintsTextV2 = `limitations in ${joinedConstraints}`;
+      } else if (constraintsTextList.length > 2) {
+        constraintsTextV2 = `limitations in ${joinedConstraints}`;
+      }
+      
+      // === GENERATE FINAL STATEMENT ===
+      let statement = '';
+      if (statementType === 'how') {
+        // Version 1: Standard "How can... address... by... considering..."
+        statement = `How can ${owner} address ${troubleV1} ${successV1}, considering ${constraintsTextV1}?`;
+      } else if (statementType === 'what') {
+        // Version 2: Strategy-focused "What strategies can... use to... while facing..."
+        statement = `What strategies can ${owner} use to overcome ${troubleV2} ${successV2}, while facing ${constraintsTextV2}?`;
+      } else if (statementType === 'ways') {
+        // Version 3: Alternative "In what ways can... overcome... in order to... while facing..."
+        statement = `In what ways can ${owner} overcome ${troubleV2} ${successV2}, while facing ${constraintsTextV2}?`;
+      }
+      
+      return statement;
+    }
+
+    // Copy statement to clipboard
+    function copyStatement(version) {
+      const textareaId = `generated-statement-${version}`;
+      const textarea = document.getElementById(textareaId);
+      const text = textarea.value;
+      
+      navigator.clipboard.writeText(text).then(() => {
+        // Update UI to show copied state
+        const iconEl = document.getElementById(`copy-icon-${version}`);
+        const textEl = document.getElementById(`copy-text-${version}`);
+        
+        iconEl.textContent = '✓';
+        textEl.textContent = 'Copied!';
+        
+        setTimeout(() => {
+          iconEl.textContent = '📋';
+          textEl.textContent = 'Copy';
+        }, 2000);
+      }).catch(err => {
+        console.error('Failed to copy:', err);
+      });
+    }
+
+    // Copy final statement
+    function copyFinalStatement() {
+      const text = document.getElementById('final-statement').textContent;
+      
+      navigator.clipboard.writeText(text).then(() => {
+        const iconEl = document.getElementById('copy-icon-final');
+        const textEl = document.getElementById('copy-text-final');
+        
+        iconEl.textContent = '✓';
+        textEl.textContent = 'Copied!';
+        
+        setTimeout(() => {
+          iconEl.textContent = '📋';
+          textEl.textContent = 'Copy Statement';
+        }, 2000);
+      }).catch(err => {
+        console.error('Failed to copy:', err);
+      });
+    }
+
+    // Select a version
+    function selectVersion(version) {
+      const selectedStatement = document.getElementById(`generated-statement-${version}`).value;
+      confirmStatement(selectedStatement);
+    }
+
+    // Generate overall feedback
+    function generateOverallFeedback() {
+      const feedbackEl = document.getElementById('overall-feedback');
+      
+      const owner = document.getElementById('owner-input').value.trim();
+      const trouble = document.getElementById('trouble-input').value.trim();
+      const success = document.getElementById('success-input').value.trim();
+      const constraints = document.getElementById('constraints-input').value.trim();
+      
+      let feedback = [];
+      
+      // Owner assessment
+      const genericTerms = ['government', 'authorities', 'people'];
+      const ownerIsGeneric = genericTerms.some(term => owner.toLowerCase().includes(term));
+      if (!ownerIsGeneric && owner.length > 10) {
+        feedback.push({
+          icon: '✓',
+          color: 'green',
+          title: 'Owner: Excellent',
+          text: 'Specific and actionable ownership clearly identified.'
+        });
+      } else {
+        feedback.push({
+          icon: '⚠️',
+          color: 'yellow',
+          title: 'Owner: Could Improve',
+          text: 'Consider being more specific about who owns this problem.'
+        });
+      }
+      
+      // Trouble assessment
+      if (trouble.length >= 30) {
+        feedback.push({
+          icon: '✓',
+          color: 'green',
+          title: 'Trouble: Well Defined',
+          text: 'Problem is clearly articulated and specific.'
+        });
+      } else {
+        feedback.push({
+          icon: '⚠️',
+          color: 'yellow',
+          title: 'Trouble: Needs Detail',
+          text: 'Add more context about why this is a problem.'
+        });
+      }
+      
+      // Success assessment
+      const hasMetrics = /\d+/.test(success) || success.toLowerCase().includes('%');
+      if (hasMetrics && success.length >= 20) {
+        feedback.push({
+          icon: '✓',
+          color: 'green',
+          title: 'Success: Measurable',
+          text: 'Clear, measurable success criteria identified.'
+        });
+      } else {
+        feedback.push({
+          icon: '⚠️',
+          color: 'yellow',
+          title: 'Success: Add Metrics',
+          text: 'Include specific numbers or percentages for success.'
+        });
+      }
+      
+      // Constraints assessment
+      const constraintKeywords = ['budget', 'time', 'space', 'limited', '$'];
+      const hasConcreteConstraints = constraintKeywords.some(word => constraints.toLowerCase().includes(word));
+      if (hasConcreteConstraints) {
+        feedback.push({
+          icon: '✓',
+          color: 'green',
+          title: 'Constraints: Specific',
+          text: 'Concrete limitations clearly identified.'
+        });
+      } else {
+        feedback.push({
+          icon: '⚠️',
+          color: 'yellow',
+          title: 'Constraints: Be Specific',
+          text: 'Add specific budget, time, or resource constraints.'
+        });
+      }
+      
+      feedbackEl.innerHTML = feedback.map(item => `
+        <div class="flex items-start gap-3 bg-white rounded-lg p-3 border-2 border-${item.color}-200">
+          <span class="text-2xl">${item.icon}</span>
+          <div>
+            <p class="font-bold text-${item.color}-900 text-sm">${item.title}</p>
+            <p class="text-${item.color}-700 text-xs">${item.text}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Confirm statement
+    function confirmStatement(statement) {
+      document.getElementById('final-statement').textContent = statement;
+      document.getElementById('statement-section').classList.add('hidden');
+      document.getElementById('success-confirmation').classList.remove('hidden');
+      document.getElementById('success-confirmation').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    // Refine statement
+    function refineStatement() {
+      document.getElementById('statement-section').classList.add('hidden');
+      document.querySelector('#tosca-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // Start over
+    function startOver() {
+      document.getElementById('tosca-form').reset();
+      document.getElementById('statement-section').classList.add('hidden');
+      document.getElementById('success-confirmation').classList.add('hidden');
+      
+      Object.keys(validationState).forEach(key => validationState[key] = false);
+      
+      ['owner', 'trouble', 'success', 'constraints'].forEach(field => {
+        document.getElementById(`${field}-feedback`).classList.add('hidden');
+        document.getElementById(`${field}-status`).classList.add('hidden');
+        document.getElementById(`${field}-paraphrase`).classList.add('hidden');
+      });
+      
+      updateProgress();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Initialize
+    updateProgress();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9be67bb4a3ee2f12',t:'MTc2ODQ5MTc0OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+  </body>
+</html>
